@@ -8,7 +8,6 @@ router.get('/', (req, res) => {
     db('accounts') 
         .then(posts => {
             res.status(200).json(posts); 
-            // console.log(posts)
         })
         .catch(error => {
             res.status(500).json({
@@ -25,8 +24,7 @@ router.get('/:id', (req, res) => {
         .where({ id }) 
         .first()
         .then(accounts => {
-            // res.status(200).json(accounts[0]) 
-            console.log(accounts)
+            res.status(200).json(accounts) 
         })
         .catch(error => {
             res.status(500).json({
@@ -42,12 +40,11 @@ router.post('/', (req, res) => {
     db('accounts')
         .insert(newAccount, 'id') 
         .then(response  => {
-            // res.status(200).json(accounts[0]) 
-            console.log(response)
+            res.status(200).json(response) 
         })
         .catch(error => {
             res.status(500).json({
-                message: 'Failed to get account with this id', 
+                message: 'Failed to add account', 
                 error: error 
             })
         })
@@ -57,17 +54,23 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
     const update = req.body; 
+    const { id } = req.params
 
     db('accounts')
-        .where('id', req.params.id)
+        .where('id', id)
         .update(update) 
-        .then(accountNum  => {
-            // res.status(200).json(accounts[0]) 
-            console.log(`Updated account number ${accountNum}`)
+        .then(response  => {
+            if (response === 1) {
+                console.log(`Updated account number ${id}`)
+            } else {
+                console.log(`Unsuccessful update of account number ${id}`)
+            }
+            res.status(200).json(response) 
+            
         })
         .catch(error => {
             res.status(500).json({
-                message: 'Failed to get account with this id', 
+                message: 'Failed to update account with this id', 
                 error: error 
             })
         })
@@ -77,13 +80,18 @@ router.delete('/:id', (req, res) => {
     db('accounts')
         .where({ id: req.params.id })
         .del()
-        .then(accountNum  => {
-            // res.status(200).json(accounts[0]) 
-            console.log(`deleted account number ${accountNum}`)
+        .then(response  => {
+            if (response === 1) {
+                console.log(`Deleted account number ${req.params.id}`)
+            } else {
+                console.log(`Could not delete account number ${req.params.id}`)
+            }
+            res.status(200).json(response)
+            
         })
         .catch(error => {
             res.status(500).json({
-                message: 'Failed to get account with this id', 
+                message: 'Failed to delete account with this id', 
                 error: error 
             })
         })
